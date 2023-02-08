@@ -1,1 +1,8 @@
 Use this file to explain how your sploit0 works.
+
+Target0 accepts a user input string up to size 25 bytes.
+To start the buffer is filled with 25 bytes of junk data.
+The next 4 bytes overwrites the previous ebp with its previous value.
+Then, 4 bytes are written to the stack for the return address.
+Here this value is 0x804851d. This is the branch path of the code
+which assigns the letter A to the grade variable.
