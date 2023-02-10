@@ -1,1 +1,10 @@
 Use this file to explain how your sploit1 works.
+
+Target1 accepts a buffer of 180 bytes.
+Since the shellcode provided is 45 bytes I filled
+the input with 180-45 = 135 bytes of nop sled \x90.
+The next 45 bytes are the shellcode. Lastly, I use 
+8 bytes to overwrite the EBP/EIP with 0xBFFFFD40. This hex
+code is the location of the buffer in memory + 60 bytes.
+I added 60 bytes to be near the middle of the nop sled to
+account for the stack shifting.
