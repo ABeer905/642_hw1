@@ -1,1 +1,15 @@
 Use this file to explain how your sploit2 works.
+
+Target2 accepts a buffer of 200 bytes, however, the strcpy
+is length guarded. One mistake is that the for loop end 
+condition is <=, normally this would be acceptable assuming
+a string that is smaller than the buffer and null terminated.
+In the event of a string the size of 200 though, this will cause
+the function to write to the 200th index or the 201st byte.
+I use this to zero out the least significant byte of the saved ebp
+in bar(). When bar returns to foo it restores the ebp to this new address 
+inside the buf. When foo returns it resotres the saved eip in relation
+to $ebp. Since $ebp is in the buffer we can fill the buffer with
+our desired eip. The eip 0xbffffd4f fills the first half of the buffer,
+the next 1/4 is nop sled and final 1/4th the shell code. The last byte
+is just 0x00 which is the one that overwrites the ebp.
