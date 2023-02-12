@@ -1,1 +1,13 @@
 Use this file to explain how your sploit3 works.
+
+In sploit 3 I can input a custom size for my argument.
+One mistake is that this custom size is cast to a signed integer.
+This means that I can input a negative number and it will bypass
+the size guard. However, not any negative number will do as once
+it is interpreted as an unsiged int in memcpy the number will be 
+very large causing a segfault. The negative number -2147483482
+will both bypass the size guard and when multiplied by the 
+sizeof(widget_t) will overflow and yield a small number 2656. My
+target buffer is 2640 bytes. Following the size input, this gives 
+room for 2595 nop sled bytes, 45 bytes of shellcode, followed by 
+16 bytes of the eip which will point to the nop sled at 0xbfffed90.
