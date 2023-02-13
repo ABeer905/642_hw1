@@ -10,6 +10,7 @@ I use this to zero out the least significant byte of the saved ebp
 in bar(). When bar returns to foo it restores the ebp to this new address 
 inside the buf. When foo returns it resotres the saved eip in relation
 to $ebp. Since $ebp is in the buffer we can fill the buffer with
-our desired eip. The eip 0xbffffd4f fills the first half of the buffer,
-the next 1/4 is nop sled and final 1/4th the shell code. The last byte
-is just 0x00 which is the one that overwrites the ebp.
+our desired eip. The eip 0xbffffd4f fills the first half of the buffer
+that points to the next 1/4 which is nop sled and the final 1/4th is the
+shell code. The last byte is just 0x00 which is the one that overwrites
+the ebp.

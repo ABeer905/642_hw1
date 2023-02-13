@@ -27,8 +27,8 @@ I set the right pointer to be the address of the saved eip in tmalloc:tfree. (0x
    is even causing GET_FREEBIT to fail.
 
 5. tfree returns into the buffer at the address of left pointer 0x08... We will first execute 
-    with the jump instruction and bypass 0xbf... illegal opcode that gets written to the buffer.
-    We will then land in the nop sled and eventually the shellcode. 
+   with the jump instruction and bypass 0xbf... illegal opcode that gets written to the buffer.
+   We will then land in the nop sled and eventually the shellcode. 
 
 
 notes:
