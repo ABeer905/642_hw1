@@ -1,1 +1,41 @@
 Use this file to explain how your sploit4 works.
+
+A mistake made in sploit4 is that it calls free a second time 
+on an already freed pointer. Since this pointer is inside a buffer
+that is written to, I can insert a custom left/right memory chunk values.
+The freed pointer is located at 1536 bytes inside the 2048 byte buffer,
+therefore 1536 bytes - 8 = The left pointer in the heap list and 
+1536 bytes - 4 = the right pointer in the heap linked list.
+
+I set the left poitner to be somewhere within the first 100 bytes of the buffer. (0x080594A0) 
+    ---> The value eip gets overwritten with.
+I set the right pointer to be the address of the saved eip in tmalloc:tfree. (0xbffff84C)
+
+1. The pointer q gets our left pointer. This points to 0x7FEB repeating for 100 bytes.
+   It is important that the lsb is odd in order to pass the GET_FREEBIT 
+   function call. This particular value is a jump instruction which will allow
+   us to skip an illegal opcode that gets written into the buffer in step 2.
+
+2. Q's right node gets our right pointer. This is an illegal instruction and must be skipped later. 
+
+3. The left node located at the right pointer gets the address of the left pointer.
+   In other words, the right pointer can point to the address of the saved eip and it will
+   set that value there to the left pointer, our goal address in the buffer. Therefore I set the right
+   pointer to be 0xbf... -> the address of the eip which gets the value of the left pointer 0x08...
+
+4. Free tries to consolidate rightwards. This can be skipped since the right value of q
+   is even causing GET_FREEBIT to fail.
+
+5. tfree returns into the buffer at the address of left pointer 0x08... We will first execute 
+    with the jump instruction and bypass 0xbf... illegal opcode that gets written to the buffer.
+    We will then land in the nop sled and eventually the shellcode. 
+
+
+notes:
+p.left = EIP value, p.right = EIP addr
+EIP = q 
+q.left = 0x41414141
+q.right = 0xBFFFF84C
+
+/tmp/target4 $(perl -e 'print "A"x100';perl -e 'print "\x90"x1383';cat shellcode;perl -e 'print "\xA0\x94\x05\x08\x3c\xf2\xff\xbf"';)
+/tmp/target4 $(perl -e 'print "\x7F\xEB"x50';perl -e 'print "\x90"x1383';cat shellcode;perl -e 'print "\xa8\x94\x05\x08\x3c\xf2\xff\xbf"';) -> better
