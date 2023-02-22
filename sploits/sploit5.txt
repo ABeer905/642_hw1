@@ -1,1 +1,26 @@
 Use this file to explain how your sploit5 works.
+
+Target5 uses snprintf and allows us to insert out own string formats.
+
+1. To start, we create a buffer where the first 4 bytes are the address 
+   of the eip offset by one byte.
+2. The remainder of 480 bytes of the buffer can be filled with nop sled 
+   (430 bytes) and 45 bytes of shellcode.
+3. At this point the buffer is full and since it is size guarded
+   no more data can be written to it. However, it will continue 
+   to print the remaining characters even if they do not go into
+   the buffer.
+
+   When we insert string formatting arguments the print looks for
+   extra arguments input to the function. Sicne no extra args are input
+   it will read data from the stack. First we use %d twice this increments
+   the argument pointer. Then we do %12582420d - this increments the argument
+   pointer a third time while also printing 12582420 spaces. Now, the argument
+   pointer points to the beginning of the buffer. The last argument is %n. %n 
+   will take the address (addr of eip offset by one byte) at the beggining of 
+   the buffer and write the number of bytes printed at the address. At this
+   point we have printed ~12582420 bytes which gives 0xbffffb. Now the eip 
+   points to the nop sled in the buffer.  
+
+notes:
+$(perl -e 'print "\x4d\xf6\xff\xbf"x1';perl -e 'print "\x90"x430';cat shellcode;perl -e 'print "%d"x2';perl -e 'print "%12582420d"';perl -e 'print "%n"';)
